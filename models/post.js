@@ -13,6 +13,9 @@ const postSchema = new Schema({
     type: String,
     required: true,
   },
+  likenum: {
+    type: Number,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

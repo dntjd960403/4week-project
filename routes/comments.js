@@ -72,13 +72,11 @@ router.put("/:_commentId", authMiddleware, async (req, res) => {
     const { comment } = req.body
 
     if (!comment) {
-      // TODO: Joi를 사용하지 않음
       res.status(400).json({ message: "댓글 내용을 입력해주세요." });
       return;
     }
 
     if (!_id) {
-      // TODO: Joi를 사용하지 않음
       res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." });
       return;
     }
@@ -107,7 +105,6 @@ router.delete("/:_commentId", authMiddleware, async (req, res) => {
     const password = req.body["password"];
 
     if (!_id ) {
-      // TODO: Joi를 사용하지 않음
       res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." });
       return;
     }
