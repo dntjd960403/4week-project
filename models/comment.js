@@ -21,7 +21,6 @@ module.exports = (sequelize, DataTypes) => {
     userId: DataTypes.INTEGER,
     postId: DataTypes.INTEGER,
     nickname: DataTypes.STRING,
-    title: DataTypes.STRING,
     comment: DataTypes.STRING
   }, {
     sequelize,
