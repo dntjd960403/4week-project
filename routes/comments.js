@@ -1,26 +1,25 @@
 const express = require("express");
-const Comment = require("../models/comment");
+const {Comments} = require("../models");
 const router = express.Router();
 const authMiddleware = require("../middlewares/auth-middleware");
 
 //댓글 목록 조회
-router.get("/:_postId", async (req, res) => {
+router.get("/:postId", async (req, res) => {
   try {
-    const _id = req.params._postId;
+    const { postId } = req.params
 
-    if (!_id) {
-      // TODO: Joi를 사용하지 않음
+    if (!postId) {
       res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." });
       return;
     }
 
-    const comments = await Comment.find({ postId: _id }).sort({createdAt: -1});
+    const comments = await Comments.findAll({ where: {postId} })
 
     let resultList = [];
 
     for (const comment of comments) {
       resultList.push({
-        commentId: comment._id,
+        commentId: comment.commentId,
         userId: comment.userId,
         nickname: comment.nickname,
         comment: comment.comment,
@@ -37,9 +36,9 @@ router.get("/:_postId", async (req, res) => {
 });
 
 //댓글 생성
-router.post("/:_postId", authMiddleware, async (req, res) => {
+router.post("/:postId", authMiddleware, async (req, res) => {
   try {
-    const _id = req.params._postId;
+    const { postId } = req.params
     const { nickname, userId } = res.locals.user;
     const comment = req.body["comment"];
 
@@ -48,13 +47,12 @@ router.post("/:_postId", authMiddleware, async (req, res) => {
       return;
     }
 
-    if (!_id) {
-      // TODO: Joi를 사용하지 않음
+    if (!postId) {
       res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." });
       return;
     }
 
-    await Comment.create({ userId, nickname, postId: _id, comment });
+    await Comments.create({ userId, nickname, postId, comment });
 
     res.status(201).json({ message: "댓글을 생성하였습니다." });
   } catch (error) {
@@ -65,9 +63,9 @@ router.post("/:_postId", authMiddleware, async (req, res) => {
 });
 
 // 댓글 수정
-router.put("/:_commentId", authMiddleware, async (req, res) => {
+router.put("/:commentId", authMiddleware, async (req, res) => {
   try {
-    const _id = req.params._commentId;
+    const { commentId } = req.params
     const { nickname } = res.locals.user;
     const { comment } = req.body
 
@@ -76,18 +74,18 @@ router.put("/:_commentId", authMiddleware, async (req, res) => {
       return;
     }
 
-    if (!_id) {
+    if (!commentId) {
       res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." });
       return;
     }
 
-    const isExist = await Comment.findOne({ _id, nickname });
+    const isExist = await Comments.findOne({ where: {commentId, nickname} });
     if (!isExist) {
       res.status(404).json({ message: "댓글 조회에 실패하였습니다." });
       return;
     }
 
-    await Comment.updateOne({ _id }, { $set: { comment } });
+    await Comments.update({ comment }, { where: { commentId } });
 
     res.status(201).json({ message: "댓글을 수정하였습니다." });
   } catch (error) {
@@ -98,25 +96,25 @@ router.put("/:_commentId", authMiddleware, async (req, res) => {
 });
 
 // 댓글 삭제
-router.delete("/:_commentId", authMiddleware, async (req, res) => {
+router.delete("/:commentId", authMiddleware, async (req, res) => {
   try {
     const { nickname } = res.locals.user;
-    const _id = req.params._commentId;
-    const password = req.body["password"];
+    const { commentId } = req.params
+    
 
-    if (!_id ) {
+    if (!commentId ) {
       res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." });
       return;
     }
 
-    const isExist = await Comment.findOne({ _id, nickname });
+    const isExist = await Comments.findOne({ where: {commentId, nickname} });
 
-    if (!isExist || !_id) {
+    if (!isExist || !commentId) {
       res.status(404).json({ message: "댓글 조회에 실패하였습니다." });
       return;
     }
 
-    await Comment.deleteOne({ _id });
+    await Comments.destroy({ where: {commentId} });
     res.status(201).json({ message: "댓글을 삭제하였습니다." });
   } catch (error) {
     const message = `${req.method} ${req.originalUrl} : ${error.message}`;
