@@ -156,7 +156,10 @@ router.put("/:postId/like", authMiddleware, async (req, res) => {
   const { done } = req.body;
   const { postId } = req.params;
   try {
-    await Likes.create({ postId, nickname, doneAt: 0 });
+    const likey = await Likes.findOne({ where: { postId, nickname } });
+    if (!likey){
+      await Likes.create({ postId, nickname, doneAt: 0 });
+    }
   } catch (err) {
     const message = `${req.method} ${req.originalUrl} : ${error.message}`;
     console.log(message);
