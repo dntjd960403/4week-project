@@ -73,7 +73,7 @@ router.get("/:postId", async (req, res) => { // params url 무조건 아래 (와
     const post = await Posts.findOne({ where: { postId } });
 
     if (!post) {
-      res.status(400).json({ message: "게시물 없슈" });
+      res.status(404).json({ message: "게시물 없슈" });
       return;
     }
     const result = {
@@ -109,13 +109,13 @@ router.put("/:postId", authMiddleware, async (req, res) => {
 
     const isExist = await Posts.findOne({ where: { postId, nickname } });
     if (!isExist) {
-      res.status(404).json({ message: "게시글 수정에 실패하였습니다." });
+      res.status(403).json({ message: "게시글 수정에 실패하였습니다." });
       return;
     }
 
     await Posts.update({ title, content }, { where: { postId } });
 
-    res.status(201).json({ message: "게시글을 수정하였습니다." });
+    res.status(204).json({ message: "게시글을 수정하였습니다." });
   } catch (error) {
     const message = `${req.method} ${req.originalUrl} : ${error.message}`;
     console.log(message);
@@ -137,12 +137,12 @@ router.delete("/:postId", authMiddleware, async (req, res) => {
     const isExist = await Posts.findOne({ where: { postId, nickname } });
 
     if (!isExist || !postId) {
-      res.status(404).json({ message: "게시글 삭제에 실패하였습니다." });
+      res.status(403).json({ message: "게시글 삭제에 실패하였습니다." });
       return;
     }
 
     await Posts.destroy({ where: { postId } });
-    res.status(201).json({ message: "게시글을 삭제하였습니다." });
+    res.status(204).json({ message: "게시글을 삭제하였습니다." });
   } catch (error) {
     const message = `${req.method} ${req.originalUrl} : ${error.message}`;
     console.log(message);

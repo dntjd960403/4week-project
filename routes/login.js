@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
       token: jwt.sign({ userId: user.userId }, "customized-secret-key"),
     });
   } else {
-    res.status(400).send({
+    res.status(401).send({
       errorMessage: "닉네임 또는 패스워드가 틀렸습니다.",
     });
     return;

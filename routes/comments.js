@@ -43,7 +43,7 @@ router.post("/:postId", authMiddleware, async (req, res) => {
     const comment = req.body["comment"];
 
     if (!comment) {
-      res.status(400).json({ message: "댓글 내용을 입력해주세요." });
+      res.status(204).json({ message: "댓글 내용을 입력해주세요." });
       return;
     }
 
@@ -70,7 +70,7 @@ router.put("/:commentId", authMiddleware, async (req, res) => {
     const { comment } = req.body
 
     if (!comment) {
-      res.status(400).json({ message: "댓글 내용을 입력해주세요." });
+      res.status(204).json({ message: "댓글 내용을 입력해주세요." });
       return;
     }
 
@@ -81,13 +81,13 @@ router.put("/:commentId", authMiddleware, async (req, res) => {
 
     const isExist = await Comments.findOne({ where: {commentId, nickname} });
     if (!isExist) {
-      res.status(404).json({ message: "댓글 수정에 실패하였습니다." });
+      res.status(403).json({ message: "댓글 수정에 실패하였습니다." });
       return;
     }
 
     await Comments.update({ comment }, { where: { commentId } });
 
-    res.status(201).json({ message: "댓글을 수정하였습니다." });
+    res.status(200).json({ message: "댓글을 수정하였습니다." });
   } catch (error) {
     const message = `${req.method} ${req.originalUrl} : ${error.message}`;
     console.log(message);
@@ -110,12 +110,12 @@ router.delete("/:commentId", authMiddleware, async (req, res) => {
     const isExist = await Comments.findOne({ where: {commentId, nickname} });
 
     if (!isExist || !commentId) {
-      res.status(404).json({ message: "댓글 삭제에 실패하였습니다." });
+      res.status(403).json({ message: "댓글 삭제에 실패하였습니다." });
       return;
     }
 
     await Comments.destroy({ where: {commentId} });
-    res.status(201).json({ message: "댓글을 삭제하였습니다." });
+    res.status(204).json({ message: "댓글을 삭제하였습니다." });
   } catch (error) {
     const message = `${req.method} ${req.originalUrl} : ${error.message}`;
     console.log(message);

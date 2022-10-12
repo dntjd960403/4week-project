@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
     );
 
     if (password !== confirm) {
-      res.status(400).send({
+      res.status(401).send({
         errorMessage: "패스워드가 패스워드 확인란과 다릅니다.",
       });
       return;
@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
       },
     });
     if (existUsers.length) {
-      res.status(400).send({
+      res.status(409).send({
         errorMessage: "이미 가입된 닉네임이 있습니다.",
       });
       return;
