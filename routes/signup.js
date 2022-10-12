@@ -3,6 +3,7 @@ const { Users } = require("../models");
 const { Op } = require("sequelize");
 const Joi = require("joi");
 const router = express.Router();
+const bcrypt = require("bcrypt");
 
 const usersSchema = Joi.object({
   nickname: Joi.string().alphanum().min(3).required(),
@@ -13,7 +14,7 @@ const usersSchema = Joi.object({
 // 회원가입 API
 router.post("/", async (req, res) => {
   try {
-    const { nickname, password, confirm } = await usersSchema.validateAsync(
+    let { nickname, password, confirm } = await usersSchema.validateAsync(
       req.body
     );
 
@@ -43,8 +44,12 @@ router.post("/", async (req, res) => {
       });
       return;
     }
+    
+    password = await bcrypt.hash(password, 6);
+    console.log(password);
 
     await Users.create({ nickname, password });
+
     // const user = new User({ nickname, password });
     // await user.save();
 

@@ -27,7 +27,7 @@ router.post("/", authMiddleware, async (req, res) => {
 // 모든 게시글 보기
 router.get("/", async (req, res) => {
   try {
-    let posts = await Posts.findAll();
+    let posts = await Posts.findAll({ order: [["likenum", "desc"]], });
     let resultList = [];
 
     for (const post of posts) {
@@ -38,6 +38,7 @@ router.get("/", async (req, res) => {
         title: post.title,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
+        likes: post.likenum,
       });
     }
 
@@ -65,7 +66,7 @@ router.get("/like", authMiddleware, async (req, res) => {
 });
 
 //게시글 상세 조회
-router.get("/:postId", async (req, res) => {
+router.get("/:postId", async (req, res) => { // params url 무조건 아래 (와일드 카드)
   try {
     const postId = req.params.postId;
 
@@ -154,15 +155,24 @@ router.put("/:postId/like", authMiddleware, async (req, res) => {
   const { nickname } = res.locals.user;
   const { done } = req.body;
   const { postId } = req.params;
-  await Likes.create({ postId, nickname, doneAt: 0 });
+  try {
+    await Likes.create({ postId, nickname, doneAt: 0 });
+  } catch (err) {
+    const message = `${req.method} ${req.originalUrl} : ${error.message}`;
+    console.log(message);
+    res.status(400).json({ message });
+  }
   try {
     let result = "";
     const likey = await Likes.findOne({ where: { postId, nickname } });
     if (!likey) {
       res.status(400).json({ message: "데이터 형식이 올바르지 않습니다." });
       return;
-    } else if (done !== undefined) {
-      likey.doneAt = done ? new Date() : null;
+    }
+    if (done) {
+      likey.doneAt = new Date();
+    } else {
+      likey.doneAt = null;
     }
     await likey.save();
 
