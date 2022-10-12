@@ -1,5 +1,6 @@
 const express = require("express");
 const router = require('./routes');
+
 const app = express();
 
 app.use(express.json(), router); // body로 들어오는 json 해석

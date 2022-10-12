@@ -45,8 +45,9 @@ router.post("/", async (req, res) => {
       return;
     }
     
-    password = await bcrypt.hash(password, 6);
-    console.log(password);
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    password = await bcrypt.hash(password, salt);
 
     await Users.create({ nickname, password });
 

@@ -68,7 +68,7 @@ router.put("/:commentId", authMiddleware, async (req, res) => {
     const { commentId } = req.params
     const { nickname } = res.locals.user;
     const { comment } = req.body
-
+    
     if (!comment) {
       res.status(204).json({ message: "댓글 내용을 입력해주세요." });
       return;
