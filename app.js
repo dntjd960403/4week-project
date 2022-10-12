@@ -2,8 +2,8 @@ const express = require("express");
 const router = require('./routes');
 const app = express();
 
-app.use(express.json());
-app.use("/", express.urlencoded({ extended: false }), router);
+app.use(express.json(), router); // body로 들어오는 json 해석
+app.use("/", express.urlencoded({ extended: false }), router); //x-www-form-urlencoded 해석
 
 app.get("/", (req, res) => {
     res.send('블로그 만들기 힘드네')
