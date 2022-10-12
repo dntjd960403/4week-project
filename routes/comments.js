@@ -81,7 +81,7 @@ router.put("/:commentId", authMiddleware, async (req, res) => {
 
     const isExist = await Comments.findOne({ where: {commentId, nickname} });
     if (!isExist) {
-      res.status(404).json({ message: "댓글 조회에 실패하였습니다." });
+      res.status(404).json({ message: "댓글 수정에 실패하였습니다." });
       return;
     }
 
@@ -110,7 +110,7 @@ router.delete("/:commentId", authMiddleware, async (req, res) => {
     const isExist = await Comments.findOne({ where: {commentId, nickname} });
 
     if (!isExist || !commentId) {
-      res.status(404).json({ message: "댓글 조회에 실패하였습니다." });
+      res.status(404).json({ message: "댓글 삭제에 실패하였습니다." });
       return;
     }
 
